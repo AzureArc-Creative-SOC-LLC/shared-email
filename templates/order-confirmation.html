@@ -1,0 +1,106 @@
+<!--
+  Order confirmation template shared by every frontend domain.
+  Placeholders (__LIKE_THIS__) are replaced by helpers/render-template.js.
+  Brand colors/logo come from brand-config.js at send time — this file has
+  no per-brand logic. Underscore delimiters (not {{ }}) are used because
+  several placeholders sit inside style="..." attributes, and curly braces
+  there get parsed as CSS block syntax by editors, producing false syntax
+  errors.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Order Confirmation</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f3f4f6;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f3f4f6;padding:24px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:__PRIMARY_COLOR__;padding:24px 32px;text-align:center;">
+              <span style="font-size:22px;font-weight:bold;color:#ffffff;font-family:Arial,Helvetica,sans-serif;">__BRAND_NAME__</span>
+            </td>
+          </tr>
+
+          <!-- Intro -->
+          <tr>
+            <td style="padding:32px;">
+              <h1 style="margin:0 0 8px;font-size:20px;color:#111827;">Thanks for your order, __CUSTOMER_NAME__!</h1>
+              <p style="margin:0;color:#4b5563;font-size:14px;">
+                Your order <strong>#__ORDER_NUMBER__</strong> was placed on __ORDER_DATE__. We'll let you know as soon as it ships.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Items -->
+          <tr>
+            <td style="padding:0 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-size:14px;color:#111827;">
+                <thead>
+                  <tr>
+                    <th align="left" style="padding-bottom:8px;border-bottom:2px solid __PRIMARY_COLOR__;">Item</th>
+                    <th align="center" style="padding-bottom:8px;border-bottom:2px solid __PRIMARY_COLOR__;">Qty</th>
+                    <th align="right" style="padding-bottom:8px;border-bottom:2px solid __PRIMARY_COLOR__;">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  __ITEM_ROWS__
+                </tbody>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Totals -->
+          <tr>
+            <td style="padding:24px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;color:#4b5563;">
+                <tr>
+                  <td style="padding:4px 0;">Subtotal</td>
+                  <td align="right" style="padding:4px 0;">__SUBTOTAL__</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;">Shipping</td>
+                  <td align="right" style="padding:4px 0;">__SHIPPING__</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;">Tax</td>
+                  <td align="right" style="padding:4px 0;">__TAX__</td>
+                </tr>
+                __DISCOUNT_ROW__
+                <tr>
+                  <td style="padding:12px 0 0;font-size:16px;font-weight:bold;color:#111827;border-top:1px solid #e5e7eb;">Total</td>
+                  <td align="right" style="padding:12px 0 0;font-size:16px;font-weight:bold;color:#111827;border-top:1px solid #e5e7eb;">__TOTAL__</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Shipping address -->
+          <tr>
+            <td style="padding:0 32px 32px;">
+              <h2 style="font-size:14px;color:#111827;margin:0 0 8px;">Shipping to</h2>
+              <p style="margin:0;color:#4b5563;font-size:14px;line-height:1.5;">__SHIPPING_ADDRESS__</p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 32px;background-color:#f9fafb;text-align:center;">
+              <p style="margin:0 0 4px;color:#6b7280;font-size:12px;">
+                Questions about your order? Contact us at <a href="mailto:__SUPPORT_EMAIL__" style="color:__PRIMARY_COLOR__;">__SUPPORT_EMAIL__</a>
+              </p>
+              <p style="margin:0;color:#9ca3af;font-size:12px;">&copy; __YEAR__ __BRAND_NAME__. All rights reserved.</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
