@@ -11,7 +11,7 @@ const BRANDS = {
     fromName: 'Zyra Healthcare',
     logo: '',
     website: 'https://zyrahealthcare.com',
-    primaryColor: '#052d83',
+    primaryColor: '#f4866e',
     supportEmail: 'support@zyrahealthcare.com',
   },
   'vyralabs.co': {
