@@ -86,6 +86,15 @@ const BRANDS = {
     primaryColor: '#080808',
     supportEmail: 'support@liorahealthcare.com',
   },
+  'peptivalabs.uk': {
+    name: 'Peptiva Labs',
+    from: 'orders@peptivalabs.uk',
+    fromName: 'Peptiva Labs',
+    logo: '',
+    website: 'https://peptivalabs.uk',
+    primaryColor: '#4e493e',
+    supportEmail: 'support@peptivalabs.uk',
+  },
 //   'localhost': {
 //   name: 'luxen',
 //   from: 'orders@noverafitness.com',
