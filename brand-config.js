@@ -11,7 +11,7 @@ const BRANDS = {
     fromName: 'Zyra Healthcare',
     logo: '',
     website: 'https://zyrahealthcare.com',
-    primaryColor: '#f4866e',
+    primaryColor: '#e5462bf2',
     supportEmail: 'support@zyrahealthcare.com',
   },
   'vyralabs.co': {
@@ -20,7 +20,7 @@ const BRANDS = {
     fromName: 'Vyra Labs',
     logo: '',
     website: 'https://vyralabs.co',
-    primaryColor: '#181d4e',
+    primaryColor: '#f4866e',
     supportEmail: 'support@vyralabs.co',
   },
   'luxenlabs.shop': {
@@ -29,7 +29,7 @@ const BRANDS = {
     fromName: 'Luxen',
     logo: '',
     website: 'https://luxenlabs.shop',
-    primaryColor: '#111827',
+    primaryColor: '#0083c3',
     supportEmail: 'support@luxenlabs.shop',
   },
   'noverafitness.com': {
@@ -38,7 +38,7 @@ const BRANDS = {
     fromName: 'Novera',
     logo: '',
     website: 'https://noverafitness.com',
-    primaryColor: '#0f766e',
+    primaryColor: '#1a1a1a',
     supportEmail: 'support@noverafitness.com',
   },
   'lumivexlabs.co': {
@@ -47,7 +47,7 @@ const BRANDS = {
     fromName: 'Lumivex Labs',
     logo: '',
     website: '',
-    primaryColor: '#2563eb',
+    primaryColor: '#1d1b18',
     supportEmail: 'support@lumivexlabs.co',
   },
   'peptiqlabs.io': {
@@ -56,7 +56,7 @@ const BRANDS = {
     fromName: 'Peptiq',
     logo: '',
     website: 'https://peptiqlabs.io',
-    primaryColor: '#be123c',
+    primaryColor: '#229ada',
     supportEmail: 'support@peptiqlabs.io',
   },
   'vorahealthcare.com': {
@@ -65,7 +65,7 @@ const BRANDS = {
     fromName: 'Vora Healthcare',
     logo: '',
     website: 'https://vorahealthcare.com',
-    primaryColor: '#0f766e',
+    primaryColor: '#043460',
     supportEmail: 'support@vorahealthcare.com',
   },
   'jupyterlabs.net': {
@@ -86,15 +86,15 @@ const BRANDS = {
     primaryColor: '#080808',
     supportEmail: 'support@liorahealthcare.com',
   },
-  'localhost': {
-  name: 'luxen',
-  from: 'orders@noverafitness.com',
-  fromName: 'Novera',
-  logo: '',
-  website: 'https://noverafitness.com',
-  primaryColor: '#0f766e',
-  supportEmail: 'support@noverafitness.com',
-},
+//   'localhost': {
+//   name: 'luxen',
+//   from: 'orders@noverafitness.com',
+//   fromName: 'Novera',
+//   logo: '',
+//   website: 'https://noverafitness.com',
+//   primaryColor: '#0f766e',
+//   supportEmail: 'support@noverafitness.com',
+// },
 };
 
 /**
