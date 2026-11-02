@@ -23,15 +23,85 @@ function domainEnvKey(domain) {
   return String(domain || '').toUpperCase().replace(/[^A-Z0-9]/g, '_');
 }
 
+// Per-domain SMTP only. There is deliberately no shared-mailbox fallback: a
+// single Gmail account rewrites "From" to itself, which exposed the shared
+// sender address on every brand's emails.
 function resolveSmtpConfig(domain) {
   const key = domainEnvKey(domain);
   return {
     host: env(`SMTP_HOST_${key}`, env('SMTP_HOST', 'smtp.gmail.com')),
     port: Number(env(`SMTP_PORT_${key}`, env('SMTP_PORT', '587'))),
     secure: env(`SMTP_SECURE_${key}`, env('SMTP_SECURE', 'false')) === 'true',
-    user: env(`SMTP_USER_${key}`, env('EMAIL_USER')),
-    pass: env(`SMTP_PASS_${key}`, env('EMAIL_PASS')),
+    user: env(`SMTP_USER_${key}`),
+    pass: env(`SMTP_PASS_${key}`),
   };
+}
+
+// ── TurboSMTP (same TURBOSMTP_{n}_* env vars as user-order-service) ──────────
+const TURBOSMTP_MAX_ACCOUNTS = 3;
+
+function turboSmtpAccount(n) {
+  const user = env(`TURBOSMTP_${n}_USER`).trim();
+  const pass = env(`TURBOSMTP_${n}_PASS`).trim();
+  if (!user || !pass) return null;
+  const domains = env(`TURBOSMTP_${n}_DOMAINS`)
+    .split(',')
+    .map((d) => d.trim().toLowerCase().replace(/^www\./, ''))
+    .filter(Boolean);
+  return {
+    n, user, pass, domains,
+    host: env('TURBOSMTP_HOST', 'pro.turbo-smtp.com').trim(),
+    port: Number(env('TURBOSMTP_PORT', '587')) || 587,
+  };
+}
+
+/** The TurboSMTP account housing `domain`, the fallback account, or null. */
+function resolveTurboSmtpAccount(domain) {
+  const d = String(domain || '').trim().toLowerCase().replace(/^www\./, '');
+  const accounts = [];
+  for (let n = 1; n <= TURBOSMTP_MAX_ACCOUNTS; n++) {
+    const account = turboSmtpAccount(n);
+    if (account) accounts.push(account);
+  }
+  const hit = d && accounts.find((a) => a.domains.includes(d));
+  if (hit) return hit;
+  const fallback = Number(env('TURBOSMTP_FALLBACK_ACCOUNT'));
+  return accounts.find((a) => a.n === fallback) || null;
+}
+
+const turboTransporters = new Map();
+function getTurboTransporter(account) {
+  const key = `${account.n}:${account.host}:${account.port}:${account.user}`;
+  if (!turboTransporters.has(key)) {
+    turboTransporters.set(key, nodemailer.createTransport({
+      host: account.host,
+      port: account.port,
+      secure: account.port === 465,
+      auth: { user: account.user, pass: account.pass },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 20000,
+    }));
+  }
+  return turboTransporters.get(key);
+}
+
+async function sendViaTurboSmtp({ domain, from, fromName, to, replyTo, subject, html }) {
+  const account = resolveTurboSmtpAccount(domain);
+  if (!account) return { success: false, error: `No TurboSMTP account configured for "${domain}"` };
+
+  try {
+    const info = await getTurboTransporter(account).sendMail({
+      from: `${fromName} <${from}>`,
+      to,
+      replyTo,
+      subject,
+      html,
+    });
+    return { success: true, messageId: info.messageId, provider: `turbosmtp:${account.n}` };
+  } catch (err) {
+    return { success: false, error: err?.response || err.message };
+  }
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -99,7 +169,7 @@ function getSmtpTransporter(domain) {
 
 async function sendViaSmtp({ domain, from, fromName, to, replyTo, subject, html }) {
   const { user, pass } = resolveSmtpConfig(domain);
-  if (!user || !pass) return { success: false, error: `SMTP credentials not configured for "${domain}" (and no fallback EMAIL_USER/EMAIL_PASS)` };
+  if (!user || !pass) return { success: false, error: `SMTP credentials not configured for "${domain}"` };
 
   try {
     const info = await getSmtpTransporter(domain).sendMail({
@@ -116,11 +186,16 @@ async function sendViaSmtp({ domain, from, fromName, to, replyTo, subject, html 
 }
 
 /**
- * Sends an email, trying Resend first and falling back to SMTP.
+ * Sends an email through the brand's own TurboSMTP account (same routing as
+ * the newsletter / branded emails), then Resend, then a per-domain SMTP
+ * mailbox if one is configured. Never uses a shared mailbox.
  * Returns a normalized { success, messageId?, provider?, error? } result —
  * callers should not need to know which provider actually delivered it.
  */
 async function sendMail({ domain, from, fromName, to, replyTo, subject, html }) {
+  const turboResult = await sendViaTurboSmtp({ domain, from, fromName, to, replyTo, subject, html });
+  if (turboResult.success) return turboResult;
+
   const resendResult = await sendViaResend({ from, fromName, to, replyTo, subject, html });
   if (resendResult.success) return resendResult;
 
@@ -129,7 +204,7 @@ async function sendMail({ domain, from, fromName, to, replyTo, subject, html }) 
 
   return {
     success: false,
-    error: `All providers failed. Resend: ${resendResult.error}. SMTP: ${smtpResult.error}`,
+    error: `All providers failed. TurboSMTP: ${turboResult.error}. Resend: ${resendResult.error}. SMTP: ${smtpResult.error}`,
   };
 }
 
